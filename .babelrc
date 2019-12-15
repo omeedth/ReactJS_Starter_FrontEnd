@@ -1,0 +1,9 @@
+/* Babel Setup */
+
+/* Presets: */
+// @babel/env -> transpiles newer js code to older js code that can be used on more browsers
+// @babel/preset-react -> transpiles JSX code of React into js code
+
+{
+    "presets": ["@babel/env", "@babel/preset-react"]
+}
