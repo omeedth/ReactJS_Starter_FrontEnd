@@ -1,11 +1,13 @@
 /* External Imports */
 import React, { Component } from "react";
 import {hot} from "react-hot-loader";
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
 /* Internal Imports */
 import "./App.css";
+import { getAuthStatus } from './scripts/util.js';
 import HomePage from "./pages/HomePage/HomePage";
+import ProfilePage from "./pages/Profile/ProfilePage";
 
 /* Class Definition */
 // class App extends Component{
@@ -147,13 +149,74 @@ class App extends Component {
 
   constructor(props) {
     super(props);
+
+    /* State */
+    this.state = {
+
+      /* Authentication */
+      user: {},      
+      authenticated: false,
+
+      /* Error */
+      error: null,
+
+    };
+
+    /* Additional Variables */
+
+    /* Function Bindings */
+    this.setStateHandler = this.setStateHandler.bind(this);
+
   }
 
+  /* Lifecycle Functions */
+  componentDidMount() {
+    console.log('Main App Page Mounted')
+    getAuthStatus().then(status => {
+      console.log('Status',status)
+      this.setState(status, () => {
+        // Callback
+      });
+    });    
+  }
+
+  /* Component Functions */
+  setStateHandler(newState, callback) {
+    console.log('Setting Main App State!')
+    this.setState(newState,callback)
+  }
+
+  /* Render */
   render() {
     return (
       <Switch>
-        <Route exact path='/' component={HomePage} />
-        {/* <Route exact path='/user/:id' component={} /> User Page */}
+
+        <Route 
+          exact path='/'
+          render={(props) => (
+            <HomePage 
+              {...props}                                                                     // spread attributes (unpacks a json or list into multiple variables)
+              setAppState={this.setStateHandler}
+              authStatus={{user: this.state.user, authenticated: this.state.authenticated}}
+            />
+          )}
+        />
+
+        <Route 
+          path='/profile'
+          render={(props) => (
+            this.state.authenticated ? (
+              <ProfilePage 
+                {...props}
+                setAppState={this.setStateHandler}
+                authStatus={{user: this.state.user, authenticated: this.state.authenticated}}
+              />
+            ) : (
+              <Redirect to='/' /> // Receive Warning on this because it is a function that returns a class
+            )
+          )}
+        />
+
       </Switch>
     );
   }

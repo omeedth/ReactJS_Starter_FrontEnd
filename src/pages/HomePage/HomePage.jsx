@@ -1,7 +1,9 @@
 /* External Imports */
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 
 /* Internal Imports */
+import { getAuthStatus } from '../../scripts/util.js';
 
 /* Class Definition */
 class HomePage extends Component{
@@ -11,9 +13,7 @@ class HomePage extends Component{
     
     /* State */
     this.state = {
-      user: {},
-      error: null,
-      authenticated: false
+
     };
 
     /* Additional Variables */
@@ -28,32 +28,7 @@ class HomePage extends Component{
   }
 
   componentDidMount() {
-    // const fetchURL = 'http://localhost:8000/auth/google'; // INCORRECT: This is incorrect because you can't fetch the literal route where you login! It returns the html page of the provider's login screen
-    const fetchURL = 'http://localhost:8000/auth/login/success'; // In this route the back end tells us whether or not they have the user logged in and update the variables if so!
-    fetch(fetchURL, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": true
-      }     
-    }).then(response => {
-      if (response.status === 200) return response.json();
-      throw new Error("failed to authenticate user");
-    })
-    .then(responseJson => {
-      this.setState({
-        authenticated: true,
-        user: responseJson.user
-      });
-    })
-    .catch(error => {
-      this.setState({
-        authenticated: false,
-        error: "Failed to authenticate user"
-      });
-    });
+    console.log('HomePage Mounted')  
   }
 
   createNote() {
@@ -118,11 +93,12 @@ class HomePage extends Component{
     // Set authenticated state to false in the HomePage component
     // NOTE: this apps's location ('http://localhost:3000') must be a 'Valid Redirect URL' for your provider as well as the backend route!
     window.open("http://localhost:8000/auth/logout", "_self")
-    this.setState({ authenticated: false })
+    this.props.setAppState({ user: {}, authenticated: false })
+    // this.setState({ authenticated: false })
   }
 
   render(){
-    const { authenticated, user } = this.state
+    const { authenticated, user } = this.props.authStatus;
     return(
       <div className="App">
         <h1> Hello, World! </h1>
@@ -133,6 +109,7 @@ class HomePage extends Component{
         <button type="button" onClick={this.updateNote}>Update Note</button>
         <button type="button" onClick={this.googleAuth}>Google Auth</button>
         <button type="button" onClick={this.logout}>Logout</button>
+        <Link to="/profile">Profile</Link>
       </div>
     );
   }

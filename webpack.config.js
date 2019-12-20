@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-  entry: "./src/index.js",                          // Starts bundling code here
+  entry: ['babel-polyfill', './src/index.js'],      // Starts bundling code here (babel-polyfill is needed for async/await) 'babel-polyfill' must be first too
   mode: "development",
   module: {                                         // Modules -> defines how the exported js code is transformed
     rules: [
